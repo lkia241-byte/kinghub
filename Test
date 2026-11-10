@@ -1,0 +1,372 @@
+
+--[[
+    KING HUB - FULL MENU
+    Version 1.0 FREE
+    Dùng trong Roblox Studio
+    Đặt LocalScript trong StarterPlayerScripts
+]]
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "KING_HUB"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local Theme = {
+    Background = Color3.fromRGB(20, 21, 28),
+    Panel = Color3.fromRGB(30, 32, 42),
+    Button = Color3.fromRGB(43, 46, 58),
+    Gold = Color3.fromRGB(255, 190, 65),
+    White = Color3.fromRGB(245, 245, 245),
+    Green = Color3.fromRGB(45, 180, 100),
+    Red = Color3.fromRGB(190, 55, 55)
+}
+
+local enabled = {}
+local currentMenu = nil
+
+local menus = {
+    ["AUTO FARM"] = {
+        "Auto Farm Level",
+        "Auto Teleport Target",
+        "Auto Quest",
+        "Auto Mob",
+        "Auto Attack",
+        "Auto Respawn Target",
+        "Auto Select Target",
+        "Auto Next Island",
+        "Air Farm",
+        "Ground Mode",
+        "Underwater Mode",
+        "Auto Skill"
+    },
+
+    ["BOSS HUNTER"] = {
+        "Auto Boss",
+        "Boss Radar",
+        "Sea 1 Boss",
+        "Sea 2 Boss",
+        "Sea 3 Boss",
+        "Event Boss",
+        "Boss Status",
+        "Spawn Timer"
+    },
+
+    ["LIVE BOSS API"] = {
+        "Expert Swordsman Tracker",
+        "Live Boss Status",
+        "Server Finder",
+        "Server History",
+        "Auto Find Boss",
+        "Auto Server Hop"
+    },
+
+    ["SKILL MANAGER"] = {
+        "Melee Z", "Melee X", "Melee C",
+        "Melee V", "Melee E", "Melee B",
+        "Sword Z", "Sword X", "Sword C",
+        "Sword V", "Sword E", "Sword B",
+        "Fruit Z", "Fruit X", "Fruit C",
+        "Fruit V", "Fruit E", "Fruit B",
+        "Auto Skill", "Auto Normal Attack"
+    },
+
+    ["WEAPON"] = {
+        "Select Melee",
+        "Select Sword",
+        "Select Devil Fruit",
+        "Weapon Status",
+        "Auto Weapon Mode"
+    },
+
+    ["FRUIT"] = {
+        "Fruit Detector",
+        "Fruit Notification",
+        "Fruit Inventory",
+        "Duplicate Check",
+        "Bag Full Alert",
+        "Storage Tracker"
+    },
+
+    ["FISHING"] = {
+        "Auto Cast",
+        "Auto Reel",
+        "Auto Retry",
+        "Auto Loop",
+        "Fishing Status"
+    },
+
+    ["RACE & MELEE"] = {
+        "Race Tracker",
+        "Race V2 Progress",
+        "Race V3 Progress",
+        "Melee V1 Progress",
+        "Melee V2 Progress",
+        "Melee V3 Progress",
+        "Unlock Checklist"
+    },
+
+    ["HAKI"] = {
+        "Armament Haki",
+        "Observation Haki",
+        "Haki V2 Tracker",
+        "Haki Status"
+    },
+
+    ["ISLAND & SEA"] = {
+        "Sea 1 Tracker",
+        "Sea 2 Tracker",
+        "Sea 3 Tracker",
+        "Island Tracker",
+        "Sea Travel Checklist"
+    },
+
+    ["QUEST DATABASE"] = {
+        "Mob Database",
+        "Boss Database",
+        "Quest Database",
+        "Search Mob",
+        "Search Boss",
+        "Sea 1 Filter",
+        "Sea 2 Filter",
+        "Sea 3 Filter",
+        "Quest Progress"
+    },
+
+    ["CODE & EVENT"] = {
+        "Code Database",
+        "Code Status",
+        "Event Tracker",
+        "Reward Checklist"
+    },
+
+    ["SETTINGS"] = {
+        "Dark Theme",
+        "Show FPS",
+        "Show Ping",
+        "Compact UI",
+        "Reset Settings"
+    }
+}
+
+-- Main window
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 540, 0, 390)
+main.Position = UDim2.new(0.5, -270, 0.5, -195)
+main.BackgroundColor3 = Theme.Background
+main.BorderSizePixel = 0
+main.Parent = gui
+
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 12)
+mainCorner.Parent = main
+
+-- Drag window
+local dragging = false
+local dragStart, startPos
+
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+-- Header
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, 0, 0, 43)
+header.BackgroundColor3 = Theme.Panel
+header.Text = "KING HUB  |  UPDATE 11  |  FREE"
+header.TextColor3 = Theme.Gold
+header.Font = Enum.Font.GothamBold
+header.TextSize = 17
+header.Parent = main
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(35, 30)
+close.Position = UDim2.new(1, -40, 0, 6)
+close.Text = "X"
+close.TextColor3 = Theme.White
+close.BackgroundColor3 = Theme.Red
+close.Font = Enum.Font.GothamBold
+close.TextSize = 15
+close.Parent = main
+
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- Sidebar
+local sidebar = Instance.new("ScrollingFrame")
+sidebar.Size = UDim2.new(0, 165, 1, -53)
+sidebar.Position = UDim2.fromOffset(5, 48)
+sidebar.BackgroundColor3 = Theme.Panel
+sidebar.BorderSizePixel = 0
+sidebar.ScrollBarThickness = 4
+sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
+sidebar.Parent = main
+
+local sideLayout = Instance.new("UIListLayout")
+sideLayout.Padding = UDim.new(0, 4)
+sideLayout.Parent = sidebar
+
+sideLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    sidebar.CanvasSize = UDim2.new(
+        0, 0, 0, sideLayout.AbsoluteContentSize.Y + 10
+    )
+end)
+
+-- Content area
+local content = Instance.new("ScrollingFrame")
+content.Size = UDim2.new(1, -180, 1, -90)
+content.Position = UDim2.fromOffset(175, 50)
+content.BackgroundColor3 = Theme.Panel
+content.BorderSizePixel = 0
+content.ScrollBarThickness = 5
+content.CanvasSize = UDim2.new(0, 0, 0, 0)
+content.Parent = main
+
+local contentLayout = Instance.new("UIListLayout")
+contentLayout.Padding = UDim.new(0, 7)
+contentLayout.Parent = content
+
+contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    content.CanvasSize = UDim2.new(
+        0, 0, 0, contentLayout.AbsoluteContentSize.Y + 15
+    )
+end)
+
+local function clearContent()
+    for _, child in ipairs(content:GetChildren()) do
+        if child:IsA("GuiObject") and child ~= contentLayout then
+            child:Destroy()
+        end
+    end
+end
+
+local function addLabel(text)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -12, 0, 32)
+    label.BackgroundTransparency = 1
+    label.Text = "  " .. text
+    label.TextColor3 = Theme.Gold
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 15
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = content
+end
+
+local function addToggle(name)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -12, 0, 37)
+    button.BackgroundColor3 = Theme.Button
+    button.TextColor3 = Theme.White
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 13
+    button.Parent = content
+
+    local function update()
+        local state = enabled[name] == true
+        button.Text = name .. (state and "     [ ON ]" or "     [ OFF ]")
+        button.BackgroundColor3 = state and Theme.Green or Theme.Button
+    end
+
+    update()
+
+    button.MouseButton1Click:Connect(function()
+        enabled[name] = not enabled[name]
+        update()
+        print("[KING HUB]", name, enabled[name])
+    end)
+end
+
+local function addInfo(text)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -12, 0, 45)
+    label.BackgroundColor3 = Theme.Button
+    label.TextColor3 = Theme.White
+    label.Text = text
+    label.TextWrapped = true
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 12
+    label.Parent = content
+end
+
+local function showMenu(menuName)
+    currentMenu = menuName
+    clearContent()
+    addLabel(menuName)
+
+    for _, item in ipairs(menus[menuName]) do
+        addToggle(item)
+    end
+
+    if menuName == "AUTO FARM" then
+        addInfo("Demo UI: Teleport, combat and respawn systems need authorized game logic.")
+    elseif menuName == "LIVE BOSS API" then
+        addInfo("Boss status: UNKNOWN - No live game API connected.")
+    elseif menuName == "QUEST DATABASE" then
+        addInfo("Database display requires verified game data.")
+    elseif menuName == "SETTINGS" then
+        addInfo("KING HUB UI settings.")
+    end
+end
+
+-- Create sidebar buttons
+for menuName in pairs(menus) do
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -8, 0, 34)
+    button.BackgroundColor3 = Theme.Button
+    button.Text = menuName
+    button.TextColor3 = Theme.White
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 11
+    button.Parent = sidebar
+
+    button.MouseButton1Click:Connect(function()
+        showMenu(menuName)
+    end)
+end
+
+-- Footer
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, -180, 0, 28)
+footer.Position = UDim2.new(0, 175, 1, -32)
+footer.BackgroundTransparency = 1
+footer.Text = "KING HUB FREE | UI DEMO"
+footer.TextColor3 = Theme.Gold
+footer.Font = Enum.Font.Gotham
+footer.TextSize = 11
+footer.Parent = main
+
+showMenu("AUTO FARM")
+
+print("KING HUB loaded successfully!")
